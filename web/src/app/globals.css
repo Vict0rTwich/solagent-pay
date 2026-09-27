@@ -1,0 +1,528 @@
+@import "tailwindcss";
+
+/*
+ * Theme tokens ("Midnight Ledger"). Dark is the default; [data-theme="light"] is set by the sidebar toggle.
+ * Midnight indigo canvas, cool navy surfaces, blue-tinted hairlines, and one energetic electric-blue accent for
+ * actions, links, focus and icons. Status pills (emerald / amber / red / slate) stay reserved for money state.
+ */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0b1121;
+  --panel: #131b2f;
+  --raised: #1a2540;
+  --line: #222f4d;
+  --line-strong: #2e3d61;
+  --grid: #1a2440;
+  /* blue-500 / 7%: visible on navy, where a grey wash disappears. */
+  --row-hover: rgb(59 130 246 / 0.07);
+  --ink: #e8edf7;
+  --ink-2: #a3b1cc;
+  --ink-3: #7b8daf;
+  /* blue-600 fill with white text; blue-500 on hover. */
+  --accent: #2563eb;
+  --accent-hover: #3b82f6;
+  --accent-fg: #ffffff;
+  /* blue-400: accent text, icons and focus rings. */
+  --accent-ink: #60a5fa;
+  /* Tinted secondary surface: blue-500 at 10% / 20% (hover), with a 25% hairline. */
+  --accent-soft: rgb(59 130 246 / 0.1);
+  --accent-soft-hover: rgb(59 130 246 / 0.2);
+  --accent-line: rgb(59 130 246 / 0.25);
+  /* AI-agent marks and meters. */
+  --data: #60a5fa;
+  --data-ink: #93c5fd;
+  /* Status: 500-step fills and hairlines, 400-step text, bright against midnight. Slate reads 300 for contrast. */
+  --success: #34d399;
+  --success-bg: rgb(16 185 129 / 0.12);
+  --success-line: rgb(16 185 129 / 0.35);
+  --warning: #fbbf24;
+  --warning-bg: rgb(245 158 11 / 0.12);
+  --warning-line: rgb(245 158 11 / 0.35);
+  --danger: #f87171;
+  --danger-bg: rgb(239 68 68 / 0.12);
+  --danger-line: rgb(239 68 68 / 0.35);
+  --idle: #cbd5e1;
+  --idle-bg: rgb(100 116 139 / 0.18);
+  --idle-line: rgb(100 116 139 / 0.4);
+  --scrim: rgb(5 9 20 / 0.72);
+  --shadow-pop: 0 12px 32px -12px rgb(2 6 23 / 0.8);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #f4f6fb;
+  --panel: #ffffff;
+  --raised: #eef2f9;
+  --line: #dce3ef;
+  --line-strong: #c9d3e4;
+  --grid: #e8edf6;
+  --row-hover: rgb(37 99 235 / 0.05);
+  --ink: #0b1121;
+  --ink-2: #44506a;
+  --ink-3: #5f6b85;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-fg: #ffffff;
+  --accent-ink: #1d4ed8;
+  --accent-soft: rgb(37 99 235 / 0.08);
+  --accent-soft-hover: rgb(37 99 235 / 0.14);
+  --accent-line: rgb(37 99 235 / 0.25);
+  --data: #2563eb;
+  --data-ink: #1e40af;
+  --success: #047857;
+  --success-bg: #ecfdf5;
+  --success-line: #a7f3d0;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --warning-line: #fde68a;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-line: #fecaca;
+  --idle: #475569;
+  --idle-bg: #f1f5f9;
+  --idle-line: #e2e8f0;
+  --scrim: rgb(15 23 42 / 0.32);
+  --shadow-pop: 0 12px 32px -12px rgb(15 23 42 / 0.2);
+}
+
+/* The developer console stays dark in both themes, like a terminal: a deeper shade of the midnight canvas. */
+:root {
+  --console-bg: #080d1a;
+  --console-raised: #0f1628;
+  --console-line: #1b2742;
+  --console-ink: #d6deee;
+  --console-ink-2: #8a9bbe;
+  --console-ink-3: #56668a;
+}
+
+/* Light-theme overrides for the literal Tailwind palette classes (the metric cards' color personalities). */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-grid: var(--grid);
+  --color-row-hover: var(--row-hover);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-hover: var(--accent-soft-hover);
+  --color-accent-line: var(--accent-line);
+  --color-data: var(--data);
+  --color-data-ink: var(--data-ink);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-line: var(--success-line);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-line: var(--warning-line);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-line: var(--danger-line);
+  --color-idle: var(--idle);
+  --color-idle-bg: var(--idle-bg);
+  --color-idle-line: var(--idle-line);
+  --color-console: var(--console-bg);
+  --color-console-raised: var(--console-raised);
+  --color-console-line: var(--console-line);
+  --color-console-ink: var(--console-ink);
+  --color-console-ink-2: var(--console-ink-2);
+  --color-console-ink-3: var(--console-ink-3);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+/*
+ * Tighter corners than Tailwind's defaults: 5px chips, 6px controls, 8px cards and menus. `wide` (1400px) is where
+ * the overview's side rail fits beside the payments table; a named breakpoint sorts between xl and 2xl.
+ */
+@theme {
+  --breakpoint-wide: 87.5rem;
+  --radius-md: 0.3125rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+}
+
+@layer base {
+  html {
+    background: var(--canvas);
+  }
+
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Amounts, signatures and timestamps: every digit the same width, so live values don't shift. */
+  .font-mono,
+  code,
+  kbd,
+  pre {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-ink);
+    outline-offset: 2px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+}
+
+@layer components {
+  /* Small uppercase labels: mono, lightly tracked. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--panel);
+  }
+
+  /* Menus, popovers and tooltips: the one place a shadow is used, for elevation. */
+  .popover {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-xl);
+    background: var(--panel);
+    box-shadow: var(--shadow-pop);
+  }
+
+  /* Keyboard shortcut hint. */
+  .kbd {
+    display: inline-flex;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--raised);
+    padding-inline: 0.3125rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    color: var(--ink-3);
+  }
+
+  /* Primary action: solid electric blue (blue-600, blue-500 on hover) with white text. No gradient, no glow. */
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-weight: 500;
+    transition: background-color 120ms ease;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+
+  /* Secondary action: a solid blue-tinted surface with blue-400 text and a crisp tinted hairline. */
+  .btn-ghost {
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--accent-soft-hover);
+  }
+
+  /* Inline text links: blue-400 with a tinted underline that firms up on hover. */
+  .link {
+    color: var(--accent-ink);
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent-line);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 120ms ease;
+  }
+
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Column headers for every data table. */
+  .th {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+}
+
+/* Section entrance (components/dashboard/Reveal.tsx): a short fade, barely any travel. */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: reveal 280ms cubic-bezier(0.2, 0.7, 0.3, 1) var(--reveal-delay, 0ms) both;
+  }
+}
+
+/*
+ * Native <dialog> for every modal. It scrolls when it's taller than the screen (an invoice's payment view on a
+ * laptop): the top layer is fixed, so anything past the bottom edge would otherwise be out of reach. The wallet
+ * menus inside dialogs open upward from the bottom of their form, so they stay within it.
+ */
+dialog.sheet {
+  margin: auto;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-2xl);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.6);
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+}
+
+dialog.sheet.sheet-wide {
+  width: min(780px, calc(100vw - 32px));
+}
+
+dialog.sheet::backdrop {
+  background: var(--scrim);
+}
+
+dialog.sheet[open] {
+  animation: sheet-in 160ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.sheet[open] {
+    animation: none;
+  }
+}
+
+/*
+ * PoS customer display (components/pos/TillSlip.tsx): a till slip with a torn, zigzag bottom edge. The mask cuts
+ * 7px teeth into the paper; nothing is drawn with it.
+ */
+.slip {
+  --tooth: 14px;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--tooth) 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--tooth) 100%;
+}
+
+/* Each new sale prints out of the slot: the slip unrolls downward. */
+@keyframes slip-print {
+  from {
+    transform: translateY(-18px);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* "PAID" lands on the slip like a rubber stamp: big, then pressed down. */
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-8deg) scale(1.9);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-8deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-8deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slip-print {
+    animation: slip-print 460ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+
+  .stamp {
+    animation: stamp-in 280ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+}
+
+/* Time left until the register resets for the next sale. A timer, not decoration, so it runs under reduced motion too. */
+@keyframes drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.drain {
+  transform-origin: left;
+  animation: drain 3s linear forwards;
+}
+
+/*
+ * Splash screen (components/SplashScreen.tsx). The overlay fades itself out after --splash-hold, so it lifts even if
+ * JavaScript never runs; the component only removes it from the page once it has. The fade runs under reduced motion
+ * too: it's how the splash gets out of the way, and an opacity fade doesn't move anything.
+ */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  background: #0b1121;
+  animation: splash-out var(--splash-fade, 450ms) cubic-bezier(0.4, 0, 0.2, 1) var(--splash-hold, 1800ms) forwards;
+}
+
+@keyframes splash-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Fills across the hold: a timer, not decoration, so it runs under reduced motion as well. */
+.splash-progress {
+  transform-origin: left;
+  animation: splash-progress var(--splash-hold, 1800ms) cubic-bezier(0.3, 0, 0.2, 1) forwards;
+}
+
+@keyframes splash-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.splash-ring {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The mark and wordmark settle in, then lift away a touch as the canvas fades rather than only dimming with it. */
+  .splash-content {
+    animation:
+      splash-in 420ms cubic-bezier(0.2, 0.7, 0.3, 1) both,
+      splash-lift var(--splash-fade, 450ms) cubic-bezier(0.4, 0, 0.2, 1) var(--splash-hold, 1800ms) forwards;
+  }
+
+  /* The tile breathes; rings leave its edge and fade out as they widen. */
+  .splash-mark {
+    animation: splash-breathe 1.2s ease-in-out infinite;
+  }
+
+  .splash-ring {
+    animation: splash-ping 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  }
+
+  .splash-ring-late {
+    animation-delay: 0.8s;
+  }
+}
+
+@keyframes splash-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes splash-lift {
+  to {
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+@keyframes splash-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes splash-ping {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}

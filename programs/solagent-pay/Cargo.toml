@@ -1,0 +1,38 @@
+[package]
+name = "solagent-pay"
+version = "0.1.0"
+description = "Policy-limited payment wallets for autonomous AI agents"
+edition = "2021"
+# Cargo/rustc bundled with Solana 2.3 platform-tools (v1.48). With .cargo/config.toml this
+# makes dependency resolution skip crate versions that need a newer Rust (e.g. edition 2024).
+rust-version = "1.84"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "solagent_pay"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+anchor-lang = "0.32.1"
+# Default features cover `token`, `token_2022` (incl. `token_interface`) and `associated_token`.
+anchor-spl = "0.32.1"
+
+# Resolution-only pins: `cfg(any())` is always false, so these are never compiled, but Cargo
+# resolves every target's dependencies, which caps the versions the Solana crates pull in.
+# blake3 >= 1.8.3 is edition 2024 without declaring rust-version, so the MSRV-aware resolver
+# can't skip it. Remove once platform-tools ships Rust >= 1.85.
+[target.'cfg(any())'.dependencies]
+blake3 = { version = "=1.8.2", default-features = false }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

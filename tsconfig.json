@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "types": ["mocha", "chai", "node"],
+    "noEmit": true
+  },
+  "include": ["tests/**/*.ts", "migrations/**/*.ts"]
+}

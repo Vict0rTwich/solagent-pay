@@ -1,0 +1,23 @@
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+node_modules
+test-ledger
+dist
+*.tsbuildinfo
+.next
+next-env.d.ts
+.env
+.env.local
+
+# Payment server state (invoices, settlements, webhook outbox): SOLAGENT_DATA_DIR, web/.data by default
+.data
+
+# Secret keys: never commit owner/agent keypairs
+*-keypair.json
+id.json
+
+# Local AI & Rust configs
+.claude/
+.cargo/
