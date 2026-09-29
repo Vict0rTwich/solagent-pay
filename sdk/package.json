@@ -9,7 +9,11 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx --test \"tests/*.test.ts\""
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
   },
   "peerDependencies": {
     "@coral-xyz/anchor": "^0.32.1",

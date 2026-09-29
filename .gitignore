@@ -8,8 +8,9 @@ dist
 *.tsbuildinfo
 .next
 next-env.d.ts
-.env
-.env.local
+# Every .env variant (.env.local, .env.production, .env.development.local from `vercel env pull`, ...)
+.env*
+!.env.example
 
 # Payment server state (invoices, settlements, webhook outbox): SOLAGENT_DATA_DIR, web/.data by default
 .data
@@ -18,6 +19,7 @@ next-env.d.ts
 *-keypair.json
 id.json
 
-# Local AI & Rust configs
+# Local AI & Rust configs. .cargo/config.toml is tracked: it holds the resolver setting builds depend on (README).
 .claude/
-.cargo/
+.cargo/*
+!.cargo/config.toml

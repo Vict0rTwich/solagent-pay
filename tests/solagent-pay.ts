@@ -30,18 +30,39 @@ describe("solagent-pay", () => {
   let vault: PublicKey;
   let merchantAta: PublicKey;
 
-  const pay = (amount: number) =>
+  const pay = (amount: number, signer = agent) =>
     program.methods
       .pay(new BN(amount))
       .accountsPartial({
-        agent: agent.publicKey,
+        agent: signer.publicKey,
         agentWallet,
         mint,
         vault,
         recipientTokenAccount: merchantAta,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .signers([agent])
+      .signers([signer])
+      .rpc();
+
+  const updatePolicy = (maxPerTx: BN, dailyLimit: BN, paused: boolean, signer = owner) =>
+    program.methods
+      .updatePolicy(maxPerTx, dailyLimit, paused)
+      .accountsPartial({ owner: signer.publicKey, agentWallet })
+      .signers([signer])
+      .rpc();
+
+  const withdraw = (amount: number, destination: PublicKey, signer = owner) =>
+    program.methods
+      .withdraw(new BN(amount))
+      .accountsPartial({
+        owner: signer.publicKey,
+        agentWallet,
+        mint,
+        vault,
+        destination,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([signer])
       .rpc();
 
   before(async () => {
@@ -91,6 +112,55 @@ describe("solagent-pay", () => {
   it("rejects payments past the daily limit", async () => {
     await pay(5_000_000); // 3 + 5 = 8, exactly the daily limit
     await expectAnchorError(pay(1_000_000), "ExceedsDailyLimit");
+  });
+
+  it("rejects a zero-amount payment", async () => {
+    await expectAnchorError(pay(0), "ZeroAmount");
+  });
+
+  it("only lets the wallet's agent pay", async () => {
+    const stranger = Keypair.generate();
+    await expectAnchorError(pay(1_000_000, stranger), "ConstraintSeeds");
+  });
+
+  it("rejects a policy whose per-transaction limit exceeds the daily limit", async () => {
+    await expectAnchorError(updatePolicy(DAILY_LIMIT.addn(1), DAILY_LIMIT, false), "InvalidPolicy");
+  });
+
+  it("only lets the owner change the policy", async () => {
+    const stranger = Keypair.generate();
+    await expectAnchorError(updatePolicy(MAX_PER_TX, DAILY_LIMIT, true, stranger), "ConstraintHasOne");
+  });
+
+  it("blocks payments while paused, and resumes when unpaused", async () => {
+    const roomyLimit = new BN(20_000_000);
+    await updatePolicy(MAX_PER_TX, roomyLimit, true);
+    await expectAnchorError(pay(1_000_000), "WalletPaused");
+
+    await updatePolicy(MAX_PER_TX, roomyLimit, false);
+    await pay(1_000_000); // 8 + 1 = 9 spent, under the raised limit
+
+    const wallet = await program.account.agentWallet.fetch(agentWallet);
+    expect(wallet.spentInWindow.toNumber()).to.equal(9_000_000);
+    const merchantAccount = await getAccount(provider.connection, merchantAta);
+    expect(merchantAccount.amount).to.equal(9_000_000n);
+  });
+
+  it("only lets the owner withdraw", async () => {
+    const stranger = Keypair.generate();
+    await expectAnchorError(withdraw(1_000_000, merchantAta, stranger), "ConstraintHasOne");
+  });
+
+  it("lets the owner withdraw past the agent's limits, even while paused", async () => {
+    await updatePolicy(MAX_PER_TX, DAILY_LIMIT, true);
+    const ownerAta = (
+      await getOrCreateAssociatedTokenAccount(provider.connection, owner, mint, owner.publicKey)
+    ).address;
+
+    await withdraw(11_000_000, ownerAta); // 20 minted - 9 paid: the whole vault, above both limits
+
+    expect((await getAccount(provider.connection, vault)).amount).to.equal(0n);
+    expect((await getAccount(provider.connection, ownerAta)).amount).to.equal(11_000_000n);
   });
 });
 

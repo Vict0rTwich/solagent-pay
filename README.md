@@ -49,7 +49,9 @@ npm install
 anchor build               # first build creates target/deploy/solagent_pay-keypair.json
 anchor keys sync           # writes that program ID into lib.rs and Anchor.toml
 npm run build              # anchor build -> sync IDL into sdk -> build sdk + mcp-server
-anchor test                # local validator + tests/solagent-pay.ts
+anchor test                # local validator + tests/solagent-pay.ts (Anchor.toml's cluster is localnet)
+npm run test -w sdk        # x402 paywall tests
+anchor deploy --provider.cluster devnet   # deploy (or upgrade) on devnet: needs devnet SOL in your wallet
 ```
 
 Back up `target/deploy/solagent_pay-keypair.json`: it is the program's upgrade identity and `target/` is gitignored.

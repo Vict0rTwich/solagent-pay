@@ -16,7 +16,9 @@ solagent_pay = "As8yNFoLRYyHNCthjY3fxRPDi8F41JjobLmQUEFLJcCq"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+# localnet, so a plain `anchor test` runs on a local validator instead of redeploying to devnet and spending SOL.
+# Deploy to devnet explicitly: anchor deploy --provider.cluster devnet
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

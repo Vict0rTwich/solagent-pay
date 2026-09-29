@@ -1,0 +1,4 @@
+# Prefer dependency versions whose rust-version fits the workspace's (programs/*/Cargo.toml),
+# so `cargo update` doesn't pull crates that platform-tools' Cargo 1.84 can't build.
+[resolver]
+incompatible-rust-versions = "fallback"

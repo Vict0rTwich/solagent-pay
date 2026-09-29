@@ -13,7 +13,7 @@
     "build:ts": "npm run build -w sdk -w mcp-server",
     "idl:sync": "node scripts/sync-idl.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json && npm run build -w sdk && npm run typecheck -w mcp-server",
-    "test": "anchor test",
+    "test": "anchor test --provider.cluster localnet",
     "mcp:dev": "npm run build -w sdk && npm run dev -w mcp-server",
     "web:dev": "npm run dev -w web"
   },

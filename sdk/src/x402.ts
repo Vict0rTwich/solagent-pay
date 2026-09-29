@@ -200,7 +200,9 @@ export function createPaywall(options: PaywallOptions): (request: Request) => Pr
   return async (request) => {
     const url = new URL(request.url);
     const resource = url.toString();
-    const description = (options.description ?? `${request.method} ${url.pathname}`).slice(0, 80);
+    // Trimmed the way the gateway trims memos: otherwise a paid invoice's memo never matches, and every retry
+    // gets a fresh invoice instead of being served.
+    const description = (options.description ?? `${request.method} ${url.pathname}`).trim().slice(0, 80).trimEnd();
     try {
       const reference = decodePaymentHeader(request.headers.get(PAYMENT_HEADER));
       if (!reference) return await newInvoice(resource, description, "Payment required.");
@@ -291,8 +293,9 @@ export async function fetchWithPayment(
   const { pay, retries = 5, retryDelayMs = 2_000, ...request } = init;
   const first = await fetch(input, request);
   if (first.status !== 402) return first;
-  const body = (await first.json()) as Partial<PaymentRequiredBody>;
-  const requirement = body.accepts?.find((accept) => accept.scheme === X402_SCHEME);
+  // Read a clone: a 402 that isn't ours goes back to the caller with its body unread.
+  const body = (await first.clone().json().catch(() => ({}))) as Partial<PaymentRequiredBody>;
+  const requirement = Array.isArray(body.accepts) ? body.accepts.find((accept) => accept.scheme === X402_SCHEME) : undefined;
   if (!requirement) return first;
 
   await pay(requirement);
