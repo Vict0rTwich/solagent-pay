@@ -29,6 +29,8 @@ per-transaction and daily limits; an **agent** key can spend from it only within
 
 ## Setup
 
+For pinned toolchain versions, non-transactional checks, the local-validator test restriction, and the latest baseline results, see [TESTING.md](TESTING.md).
+
 Anchor does not support native Windows. On Windows, work inside WSL2 (from PowerShell: `wsl --install -d Ubuntu-24.04`).
 
 ```bash

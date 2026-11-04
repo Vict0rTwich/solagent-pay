@@ -1,0 +1,77 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w sdk
+      - run: npm run typecheck -w sdk
+      - run: npm run typecheck -w mcp-server
+      - run: npm run typecheck -w web
+      - run: npm test -w sdk
+      - run: npm test -w web
+
+  anchor-localnet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Install pinned Rust
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup default 1.98.1
+          rustc --version
+          cargo --version
+      - name: Install pinned Solana and Anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --location --retry 3 --output solana.tar.bz2 https://github.com/anza-xyz/agave/releases/download/v2.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2
+          echo '56241fbe862495ff01b2b875195e44f94c22e9f2a504591a3ade1b9d82862730  solana.tar.bz2' | sha256sum -c -
+          tar -xjf solana.tar.bz2
+          curl --fail --location --retry 3 --output anchor https://github.com/otter-sec/anchor/releases/download/v0.32.1/anchor-0.32.1-x86_64-unknown-linux-gnu
+          echo '5f25b850ce80278507a98947833fcd48423391f6d145046ffb0c5fd130dec436  anchor' | sha256sum -c -
+          chmod +x anchor
+          echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Build and test on a disposable local validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset ANCHOR_PROVIDER_URL ANCHOR_WALLET SOLANA_URL
+          anchor --version
+          solana --version
+          solana-test-validator --version
+          cargo build-sbf --version
+          if ss -ltn | grep -Eq ':(8899|8900)([[:space:]]|$)'; then
+            echo 'Local validator ports 8899 or 8900 are already in use.' >&2
+            exit 1
+          fi
+          mkdir -p target/deploy
+          solana-keygen new --no-bip39-passphrase --silent --outfile "$RUNNER_TEMP/owner.json"
+          solana-keygen new --no-bip39-passphrase --silent --outfile target/deploy/solagent_pay-keypair.json
+          # This checkout is disposable: sync only its local program ID to the new test key.
+          anchor keys sync
+          anchor build
+          anchor test --skip-build --provider.cluster localnet --provider.wallet "$RUNNER_TEMP/owner.json"
